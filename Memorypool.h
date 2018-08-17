@@ -10,6 +10,9 @@ class Memorypool
 		{
 			struct _unit *next;
 		};
+		
+		typedef char*	_raw_pointer;
+		typedef _unit*	_unit_pointer;
 
 		unsigned long	_unitSize;
 		unsigned long	_poolSize;

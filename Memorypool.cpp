@@ -7,20 +7,25 @@ Memorypool::Memorypool(unsigned long unitSize, unsigned long unitNum) :
 			_mBlock(NULL), _freeQueue(NULL)
 {
 
-	if ((_mBlock = malloc(_poolSize)))
+	try
 	{
+		_mBlock = reinterpret_cast<_raw_pointer>(operator new(_poolSize));
 		for (int i = 0; i < unitNum; i++)
 		{
-			struct _unit *newUnit = (struct _unit *)((char *)_mBlock + (sizeof(struct _unit) + unitSize) * i );
+			struct _unit *newUnit = reinterpret_cast<_unit_pointer>(reinterpret_cast<_raw_pointer>(_mBlock) + (sizeof(struct _unit) + unitSize) * i );
 			newUnit->next = _freeQueue;
 			_freeQueue = newUnit;
 		}
+	}
+	catch (std::bad_alloc &e)
+	{
+		std::cerr << "bad alloc caught:  " << e.what() << std::endl;
 	}
 }
 
 Memorypool::~Memorypool()
 {
-	free(_mBlock);
+	operator delete(_mBlock);
 }
 
 void		*Memorypool::alloc(unsigned long size)
@@ -42,7 +47,7 @@ void		Memorypool::freee(void *p)
 
 	if (p >= _mBlock && p < (char *)_mBlock + _poolSize)
 	{
-		current = (struct _unit *)((char *)p - sizeof(struct _unit));
+		current = reinterpret_cast<_unit_pointer>(reinterpret_cast<_raw_pointer>(p) - sizeof(struct _unit));
 		current->next = _freeQueue;
 		_freeQueue = current;
 	}

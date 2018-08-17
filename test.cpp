@@ -13,17 +13,22 @@ double GetTickCount(void)
     if (clock_gettime(CLOCK_MONOTONIC, &now))
 		return 0;
 	return now.tv_sec * 1000  + now.tv_nsec / 1000000.0;
- }
+}
+
+
 
 int main()
 {
 
 	Memorypool		pool(5000, 100000);
 
+	std::vector<void*>		vector(100000);
+
 	clock_t		start = clock();
 
 	for (int i = 0; i < 100000; i++)
-		pool.alloc(5000);
+		vector[i] = pool.alloc(5000);
+
 
 	std::cout << "Using memory pool : " << (((double)clock() - start) / CLOCKS_PER_SEC) << std::endl << std::endl;
 
