@@ -8,7 +8,7 @@
 template<typename T>
 Memorypool<T>::Memorypool(unsigned long unitNum) :
 			_unitSize(sizeof(T)), _poolSize(unitNum * (_unitSize + sizeof(_unit))),
-			_mBlock(NULL), _freeQueue(NULL)
+			_mBlock(NULL), _freeStore(NULL)
 {
 
 	try
@@ -17,8 +17,8 @@ Memorypool<T>::Memorypool(unsigned long unitNum) :
 		for (int i = 0; i < unitNum; i++)
 		{
 			_unit *newUnit = reinterpret_cast<_unit_pointer>(reinterpret_cast<_raw_pointer>(_mBlock) + (sizeof(_unit) + _unitSize) * i );
-			newUnit->next = _freeQueue;
-			_freeQueue = newUnit;
+			newUnit->next = _freeStore;
+			_freeStore = newUnit;
 		}
 	}
 	catch (std::bad_alloc &e)
@@ -45,10 +45,10 @@ void		*Memorypool<T>::alloc(unsigned long size)
 {
 	_unit		*tmp = NULL;
 
-	if (_mBlock &&  size <= _unitSize && _freeQueue)
+	if (_mBlock &&  size <= _unitSize && _freeStore)
 	{
-		tmp = _freeQueue;
-		_freeQueue = tmp->next;
+		tmp = _freeStore;
+		_freeStore = tmp->next;
 		return (tmp + sizeof(_unit));
 	}
 	std::cout << "Pool is full" << std::endl;
@@ -63,8 +63,8 @@ void		Memorypool<T>::freee(void *p)
 	if (p >= _mBlock && p < reinterpret_cast<_raw_pointer>(_mBlock) + _poolSize)
 	{
 		current = reinterpret_cast<_unit_pointer>(reinterpret_cast<_raw_pointer>(p) - sizeof(_unit));
-		current->next = _freeQueue;
-		_freeQueue = current;
+		current->next = _freeStore;
+		_freeStore = current;
 	}
 	else
 		throw(std::runtime_error("Pointer being freed was not allocated by the pool\n"));

@@ -18,7 +18,7 @@ class Memorypool
 		unsigned long	_poolSize;
 
 		void			*_mBlock;
-		struct _unit	*_freeQueue;
+		struct _unit	*_freeStore;
 	public:
 		Memorypool(unsigned long);
 
