@@ -14,7 +14,7 @@ class Memorypool
 		typedef char*	_raw_pointer;
 		typedef _unit*	_unit_pointer;
 
-		unsigned long	_unitSize;
+		unsigned long	_unitNum;
 		unsigned long	_poolSize;
 
 		void			*_mBlock;

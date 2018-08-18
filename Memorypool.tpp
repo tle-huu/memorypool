@@ -7,7 +7,7 @@
 
 template<typename T>
 Memorypool<T>::Memorypool(unsigned long unitNum) :
-			_unitSize(sizeof(T)), _poolSize(unitNum * (_unitSize + sizeof(_unit))),
+			_unitNum(unitNum), _poolSize(unitNum * (sizeof(T) + sizeof(_unit))),
 			_mBlock(NULL), _freeStore(NULL)
 {
 
@@ -16,7 +16,7 @@ Memorypool<T>::Memorypool(unsigned long unitNum) :
 		_mBlock = reinterpret_cast<_raw_pointer>(operator new(_poolSize));
 		for (int i = 0; i < unitNum; i++)
 		{
-			_unit *newUnit = reinterpret_cast<_unit_pointer>(reinterpret_cast<_raw_pointer>(_mBlock) + (sizeof(_unit) + _unitSize) * i );
+			_unit *newUnit = reinterpret_cast<_unit_pointer>(reinterpret_cast<_raw_pointer>(_mBlock) + (sizeof(_unit) + sizeof(T)) * i );
 			newUnit->next = _freeStore;
 			_freeStore = newUnit;
 		}
@@ -31,7 +31,7 @@ template<typename T>
 Memorypool<T>::Memorypool(const Memorypool& pool)
 throw()
 {
-	Memorypool();
+	Memorypool(pool._unitNum);
 }
 
 template<typename T>
@@ -45,7 +45,7 @@ void		*Memorypool<T>::alloc(unsigned long size)
 {
 	_unit		*tmp = NULL;
 
-	if (_mBlock &&  size <= _unitSize && _freeStore)
+	if (_mBlock &&  size <= sizeof(T) && _freeStore)
 	{
 		tmp = _freeStore;
 		_freeStore = tmp->next;
