@@ -6,7 +6,7 @@
 #include <vector>
 
 
-double GetTickCount(void) 
+double GetTickCount(void)
 {
   struct timespec now;
 
@@ -16,29 +16,35 @@ double GetTickCount(void)
 }
 
 
+struct s_test
+{
+	int	tester[5000] {0};
+};
 
 int main()
 {
 
-	Memorypool		pool(5000, 100000);
+	Memorypool<s_test>		pool(100000);
 
-	std::vector<void*>		vector(100000);
 
 	clock_t		start = clock();
 
-	for (int i = 0; i < 100000; i++)
-		vector[i] = pool.alloc(5000);
+	for (int i = 0; i < 100001; i++)
+		pool.alloc(5000);
 
 
 	std::cout << "Using memory pool : " << (((double)clock() - start) / CLOCKS_PER_SEC) << std::endl << std::endl;
 
+	std::vector<void*>		array(100000);
 
 	start = clock();
 
 	for (int i= 0; i < 100000;i++)
-		malloc(5000);
+		array[i] = (malloc(5000));
 
 	std::cout << "Without using memory pool : " << (((double)clock() - start) / CLOCKS_PER_SEC) << std::endl << std::endl;
 
+	for (auto& x : array)
+		free(x);
 	return 0;
 }

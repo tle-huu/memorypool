@@ -1,16 +1,16 @@
 #ifndef MEMORYPOOL_H
 # define MEMORYPOOL_H
+# include <cstdlib>
 
-
+template<typename T>
 class Memorypool
 {
-
 	private:
 		struct _unit
 		{
-			struct _unit *next;
+			_unit *next;
 		};
-		
+
 		typedef char*	_raw_pointer;
 		typedef _unit*	_unit_pointer;
 
@@ -20,12 +20,16 @@ class Memorypool
 		void			*_mBlock;
 		struct _unit	*_freeQueue;
 	public:
-		Memorypool(unsigned long, unsigned long);
+		Memorypool(unsigned long);
+
+		Memorypool(const Memorypool& pool) throw();
 		~Memorypool();
 
-		void *alloc(unsigned long);
-		void freee(void *);
+		void	*alloc(unsigned long);
+		void	freee(void *);
 
 };
+
+#include "Memorypool.tpp"
 
 #endif
